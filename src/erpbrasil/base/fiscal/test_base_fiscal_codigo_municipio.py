@@ -3,8 +3,10 @@
 # License AGPL-3 - See http://www.gnu.org/licenses/agpl-3.0.html
 
 import unittest
+import re
 
-import codigo_municipal
+import codigo_municipio
+
 
 CODIGOS_MUNICIPAIS_VALIDOS = ['2700102', '2700201', '2700300', '2700409', '2700508', '2700607',
                               '2700706', '2700805', '2700904', '2701001', '2701100', '2701209', '2701308']
@@ -37,6 +39,8 @@ EXCECOES = {
     '5203962': 'Buritinópolis/GO'
 }
 
+CODIGOS_MUNICIPAIS_SEM_FORMATACAO = ['2 7 0 0 1 0 2', '2-7-0-0-2-0-1', '270ASD030ASDDA0', '2700409', '2700508', '2700607',
+                              '27/00/706', 2700805, '2.7.0.0.9.0.4', '270   1001', '270(1)100', '(2701209)', '2701308']
 
 class Tests(unittest.TestCase):
 
@@ -45,92 +49,100 @@ class Tests(unittest.TestCase):
         for codigo in CODIGOS_MUNICIPAIS_VALIDOS:
             with self.subTest(codigo=codigo):
                 self.assertTrue(
-                    codigo_municipal.validar_codigo_municipal(codigo))
+                    codigo_municipio.validar_codigo_municipio(codigo))
 
         # Caso o codigo seja do tipo Inteiro:
         for codigo in CODIGOS_MUNICIPAIS_VALIDOS:
             with self.subTest(codigo=int(codigo)):
                 self.assertTrue(
-                    codigo_municipal.validar_codigo_municipal(codigo))
+                    codigo_municipio.validar_codigo_municipio(codigo))
 
     def testCodigoInvalido(self):
         # Caso o codigo seja do tipo String:
         for codigo in CODIGOS_MUNICIPAIS_INVALIDOS:
             with self.subTest(codigo=codigo):
                 self.assertFalse(
-                    codigo_municipal.validar_codigo_municipal(codigo))
+                    codigo_municipio.validar_codigo_municipio(codigo))
 
         # Caso o codigo seja do tipo Inteiro:
         for codigo in CODIGOS_MUNICIPAIS_INVALIDOS:
             with self.subTest(codigo=int(codigo)):
                 self.assertFalse(
-                    codigo_municipal.validar_codigo_municipal(codigo))
+                    codigo_municipio.validar_codigo_municipio(codigo))
 
     def testExcecao(self):
         # Caso o codigo seja do tipo String:
         for codigo in EXCECOES.keys():
             with self.subTest(codigo=codigo):
                 self.assertTrue(
-                    codigo_municipal.validar_codigo_municipal(codigo))
+                    codigo_municipio.validar_codigo_municipio(codigo))
 
         # Caso o codigo seja do tipo Inteiro:
         for codigo in EXCECOES.keys():
             with self.subTest(codigo=int(codigo)):
                 self.assertTrue(
-                    codigo_municipal.validar_codigo_municipal(codigo))
+                    codigo_municipio.validar_codigo_municipio(codigo))
 
     def testCodigoTamanhoValido(self):
 
         for codigo in CODIGOS_MUNICIPAIS_VALIDOS:
             with self.subTest(codigo=codigo):
-                self.assertTrue(codigo_municipal._validar_tamanho(codigo))
+                self.assertTrue(codigo_municipio._validar_tamanho(codigo))
 
     def testCodigoMaior(self):
 
         for codigo in CODIGOS_MAIORES:
             with self.subTest(codigo=codigo):
-                self.assertFalse(codigo_municipal._validar_tamanho(codigo))
+                self.assertFalse(codigo_municipio._validar_tamanho(codigo))
 
     def testCodigoMenor(self):
 
         for codigo in CODIGOS_MENORES:
             with self.subTest(codigo=codigo):
-                self.assertFalse(codigo_municipal._validar_tamanho(codigo))
+                self.assertFalse(codigo_municipio._validar_tamanho(codigo))
 
     def testCodigoDeEstado(self):
 
         for codigo in CODIGOS_MUNICIPAIS_VALIDOS:
             with self.subTest(codigo=codigo):
                 self.assertTrue(
-                    codigo_municipal._validar_codigo_de_estado(codigo))
+                    codigo_municipio._validar_codigo_de_estado(codigo))
 
     def testCodigoDeEstadoInvalido(self):
 
         for codigo in CODIGOS_UF_INVALIDOS:
             with self.subTest(codigo=codigo):
                 self.assertFalse(
-                    codigo_municipal._validar_codigo_de_estado(codigo))
+                    codigo_municipio._validar_codigo_de_estado(codigo))
 
     def testNumeroDeOrdemValido(self):
 
         for codigo in CODIGOS_MUNICIPAIS_VALIDOS:
             with self.subTest(codigo=codigo):
                 self.assertTrue(
-                    codigo_municipal._validar_numero_de_ordem(codigo))
+                    codigo_municipio._validar_numero_de_ordem(codigo))
 
     def testNumeroDeOrdemInvalido(self):
 
         for codigo in CODIGOS_ORDEM_INVALIDOS:
             with self.subTest(codigo=codigo):
                 self.assertFalse(
-                    codigo_municipal._validar_numero_de_ordem(codigo))
+                    codigo_municipio._validar_numero_de_ordem(codigo))
 
     def testDigitoDeControleValido(self):
 
         for codigo in CODIGOS_MUNICIPAIS_VALIDOS:
             with self.subTest(codigo=codigo):
                 self.assertTrue(
-                    codigo_municipal._validar_digito_de_controle(codigo))
+                    codigo_municipio._validar_digito_de_controle(codigo))
+                
+    def testFormatarCodigoMunicipio(self):
+
+        for codigo in CODIGOS_MUNICIPAIS_SEM_FORMATACAO:
+            with self.subTest(codigo=codigo):
+                resultado = codigo_municipio.formatar_codigo_municipio(codigo)
+                esperado = re.sub(r"\D", "", str(codigo))
+                self.assertEqual(resultado, esperado)
 
 
 if __name__ == '__main__':

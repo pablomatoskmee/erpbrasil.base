@@ -76,6 +76,12 @@ def _validar_numero_de_ordem(codigo_municipal):
 
 def _validar_digito_de_controle(codigo_municipal):
 
+    '''
+    -Dígito de Controle: módulo 10 (pesos 2 e 1)
+    -Se o resto da divisão for zero, considerar o 
+        dígito verificador igual a zero.
+    '''
+
     pesos = [1, 2, 1, 2, 1, 2]
     soma = 0
 
@@ -94,7 +100,7 @@ def _validar_digito_de_controle(codigo_municipal):
     return int(codigo_municipal[-1]) == digito_verificador
 
 
-def validar_codigo_municipal(codigo_municipal):
+def validar_codigo_municipio(codigo_municipal):
 
     codigo_municipal = str(codigo_municipal)
 
@@ -116,7 +122,7 @@ def validar_codigo_municipal(codigo_municipal):
     return True
 
 
-def formatar_codigo_municipal(codigo_municipal):
+def formatar_codigo_municipio(codigo_municipal):
 
     codigo_municipal = str(codigo_municipal)
 
