@@ -4,8 +4,6 @@
 
 import re
 
-
-
 CODIGOS_DE_ESTADO = {
     '11': 'Rondônia',
     '12': 'Acre',
@@ -36,56 +34,90 @@ CODIGOS_DE_ESTADO = {
     '53': 'Distrito Federal'
 }
 
-def __validar_digito_de_controle(codigo_municipal):
-
-    pesos = [1, 2, 1, 2 ,1 , 2]
-    digitos = []
-    for digito in codigo_municipal:
-        digitos.append(int(digito))
-
-    ponderacao = []
-    for peso, digito in zip(pesos, digitos[:-1]):
-        ponderacao.append(peso*digito)
-
-    somatorio = sum(ponderacao)
-    if somatorio > 9:
-        somatorio = int(str(somatorio)[0]) + int(str(somatorio)[1])
+EXCECOES = {
+    '9999999': 'EXTERIOR',
+    '4305871': 'Coronel Barros/RS',
+    '2201919': 'Bom Princípio do Piauí/PI',
+    '2202251': 'Canavieira/PI',
+    '2201988': 'Brejo do Piauí/PI',
+    '2611533': 'Quixaba/PE',
+    '3117836': 'Cônego Marinho/MG',
+    '3152131': 'Ponto Chique/MG',
+    '5203939': 'Buriti de Goiás/GO',
+    '5203962': 'Buritinópolis/GO'
+}
 
 
-    digito_verificador = 10 - (somatorio%10)
-    digito_de_controle = int(codigo_municipal[-1])
-    if digito_de_controle != digito_verificador:
+def _validar_tamanho(codigo_municipal):
+
+    if len(codigo_municipal) != 7:
         return False
 
     return True
 
-def validar_codigo_municipal(codigo_municipal):
 
-    codigo_municipal = str(codigo_municipal)
-    #codigo_municipal = re.sub(r"\D", "", codigo_municipal)
-
-    if len(codigo_municipal) != 7:
-        return False
+def _validar_codigo_de_estado(codigo_municipal):
 
     codigo_de_estado = codigo_municipal[:2]
     if codigo_de_estado not in CODIGOS_DE_ESTADO.keys():
         return False
 
+    return True
+
+
+def _validar_numero_de_ordem(codigo_municipal):
+
     numero_de_ordem = int(codigo_municipal[2:6])
     if numero_de_ordem == 0:
         return False
 
+    return True
 
-    if not(__validar_digito_de_controle(codigo_municipal)):
+
+def _validar_digito_de_controle(codigo_municipal):
+
+    pesos = [1, 2, 1, 2, 1, 2]
+    soma = 0
+
+    for i in range(len(pesos)):
+        ponderacao = int(codigo_municipal[i]) * pesos[i]
+        soma += (ponderacao // 10) + (ponderacao % 10)
+
+    resto = soma % 10
+    if resto == 0:
+        digito_verificador = 0
+        return int(codigo_municipal[-1]) == digito_verificador
+
+    else:
+        digito_verificador = 10 - resto
+
+    return int(codigo_municipal[-1]) == digito_verificador
+
+
+def validar_codigo_municipal(codigo_municipal):
+
+    codigo_municipal = str(codigo_municipal)
+
+    if codigo_municipal in EXCECOES.keys():
+        return True
+
+    if not (_validar_tamanho(codigo_municipal)):
+        return False
+
+    if not (_validar_codigo_de_estado(codigo_municipal)):
+        return False
+
+    if not (_validar_numero_de_ordem(codigo_municipal)):
+        return False
+
+    if not (_validar_digito_de_controle(codigo_municipal)):
         return False
 
     return True
 
-    
-    
-        
-        
 
+def formatar_codigo_municipal(codigo_municipal):
 
+    codigo_municipal = str(codigo_municipal)
 
-    
+    return re.sub(r"\D", "", codigo_municipal)
