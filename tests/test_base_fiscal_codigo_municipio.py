@@ -5,7 +5,7 @@
 import unittest
 import re
 
-import codigo_municipio
+from erpbrasil.base.fiscal import codigo_municipio
 
 
 CODIGOS_MUNICIPAIS_VALIDOS = ['2700102', '2700201', '2700300', '2700409', '2700508', '2700607',
